@@ -35,16 +35,19 @@ if __name__ == "__main__":
         
         if t_input.lower() == "gather":
             # Gather ingredients
-            num_rolls = int(input("How many ingredients?"))
+            num_rolls = int(input("How many ingredients?\n"))
 
         elif t_input.lower() == "view":
             # Display the inventory
             print(f"Displaying current inventory...")
 
-            with open(inventory_file, "w") as inv_file:
+            with open(inventory_file, "r") as inv_file:
                 invreader = csv.reader(inv_file, delimiter=",")
                 for row in invreader:
-                    print()
+
+                    # Ignore the header row
+                    if row[0] != "Ingredient Name":
+                        print(f"\t{row[1]} {row[0]}")     # TODO: Could add more info about when/where
         
         elif t_input.lower() == "view_r":
             # Display all recipes
