@@ -1,7 +1,7 @@
 """
 Dungeons & Dragons - Potion Notion
 
-Provides a Dungeon Master the ability to stochastically 
+Provides a Dungeon Master the ability to track ingredients and recipes and allow for stochastic gathering of recipes.
 
 Brennen Dahl, Parker Brandt
 """
@@ -10,6 +10,14 @@ import csv
 import numpy as np
 import os
 import sys
+
+
+# Colors for console printing,
+W = '\033[0m'   # white (normal)
+R = '\033[31m'  # red
+O = '\033[33m'  # orange
+Y = '\033[93m'  # yellow
+G = '\033[32m'  # green
 
 
 # Global Variables
@@ -29,6 +37,16 @@ if __name__ == "__main__":
 
     done = False
 
+    # Load inventory data from CSV file
+    # Inventory dict format:
+    #   key = String Ingredient Name (i.e. "Rose")
+    #   value = Integer Quantity (i.e. 2)
+    inventory = {}
+    with open(inventory_file, "r") as inv_file:
+        invreader = csv.reader(inv_file, delimiter=",")
+        for row in invreader:
+            inventory[row[0]] = int(row[1])
+
     while done != True:
         print(f"\nPlease select desired action...")
         t_input = input(f"Actions are:\n\tGather Ingredients (\'gather\'),\n\tView Inventory (\'view\'),\n\tView Recipes (\'view_r\'),\n\tCraft Recipe (\'craft\'),\n\tor Stop (\'stop\')\n\n")
@@ -41,13 +59,8 @@ if __name__ == "__main__":
             # Display the inventory
             print(f"Displaying current inventory...")
 
-            with open(inventory_file, "r") as inv_file:
-                invreader = csv.reader(inv_file, delimiter=",")
-                for row in invreader:
-
-                    # Ignore the header row
-                    if row[0] != "Ingredient Name":
-                        print(f"\t{row[1]} {row[0]}")     # TODO: Could add more info about when/where
+            for ingredient, quantity in inventory.values():
+                print(f"\t{quantity} {ingredient}")         # TODO: Could add more info about when/where
         
         elif t_input.lower() == "view_r":
             # Display all recipes
@@ -68,7 +81,8 @@ if __name__ == "__main__":
 
                             if i < len(ingredients) - 1:
                                 output += " + "
-
+                        
+                        # TODO: Check if this ingredient is craftable
                         print(f"\t{output}")
         
         elif t_input.lower() == "craft":
