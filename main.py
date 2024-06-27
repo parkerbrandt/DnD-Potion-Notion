@@ -52,6 +52,24 @@ if __name__ == "__main__":
         elif t_input.lower() == "view_r":
             # Display all recipes
             print(f"Displaying recipes...")
+
+            with open(recipes_file, "r") as rec_file:
+                recreader = csv.reader(rec_file, delimiter=",")
+                for row in recreader:
+
+                    # Ignore the header row
+                    if row[0] != "Recipe Name":
+                        output = f"{row[0]} = "
+
+                        ingredients = row[1].split("|")
+                        quantities = row[2].split("|")
+                        for i, c in enumerate(ingredients):
+                            output += f"{quantities[i]} {c}"
+
+                            if i < len(ingredients) - 1:
+                                output += " + "
+
+                        print(f"\t{output}")
         
         elif t_input.lower() == "craft":
             # Craft a recipe and put into inventory
