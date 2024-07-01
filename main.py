@@ -26,6 +26,7 @@ inventory_file = "data/inventory.csv"
 recipes_file = "data/recipes.csv"
 
 verbosity = 2
+auto_roll = False
 
 
 """
@@ -37,6 +38,26 @@ if __name__ == "__main__":
 
     done = False
 
+    # Load recipe data from CSV file
+    # Recipe dict format:
+    #   key = String Recipe Name (i.e. "Healing Potion")
+    #   value = Dict of Ingredient Names and Quantities (i.e. {"Rose": 1, "Water": 2})
+    recipes = {}
+    with open(recipes_file, "r") as rec_file:
+        recreader = csv.reader(rec_file, delimiter=",")
+        for row in recreader:
+            if row[0] != "Recipe Name":
+                
+                # Separate all ingredients and quantities
+                ing_dict = {}
+                ingredients = row[1].split("|")
+                quantities = row[2].split("|")
+                
+                for i, c in enumerate(ingredients):
+                    ing_dict[i] = quantities[c]
+
+                recipes[row[0]] = ing_dict
+
     # Load inventory data from CSV file
     # Inventory dict format:
     #   key = String Ingredient Name (i.e. "Rose")
@@ -45,7 +66,8 @@ if __name__ == "__main__":
     with open(inventory_file, "r") as inv_file:
         invreader = csv.reader(inv_file, delimiter=",")
         for row in invreader:
-            inventory[row[0]] = int(row[1])
+            if row[0] != "Ingredient Name":
+                inventory[row[0]] = int(row[1])
 
     while done != True:
         print(f"\nPlease select desired action...")
@@ -53,7 +75,21 @@ if __name__ == "__main__":
         
         if t_input.lower() == "gather":
             # Gather ingredients
-            num_rolls = int(input("How many ingredients?\n"))
+
+            environ = input("What is the current environment?\n")
+            num_ingredients = int(input("How many ingredients?\n"))
+
+            for i in range(num_ingredients):
+
+                # Roll a die
+                if auto_roll:
+                    # The program will roll a die
+                    die_result = np.random.uniform(1, 20)
+                    print(f"{Y}You have rolled a {die_result}{W}")
+                else:
+                    die_result = int(input(f"Roll a D20 for Ingredient {i}\n"))
+
+                # TODO: Use numpy to generate a random roll and influence by the D20 score to shift the distribution
 
         elif t_input.lower() == "view":
             # Display the inventory
@@ -83,7 +119,7 @@ if __name__ == "__main__":
                                 output += " + "
                         
                         # TODO: Check if this ingredient is craftable
-                        print(f"\t{output}")
+                        print(f"\t{G}{output}{W}")
         
         elif t_input.lower() == "craft":
             # Craft a recipe and put into inventory
