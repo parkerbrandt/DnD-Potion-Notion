@@ -54,7 +54,7 @@ if __name__ == "__main__":
                 quantities = row[2].split("|")
                 
                 for i, c in enumerate(ingredients):
-                    ing_dict[i] = quantities[c]
+                    ing_dict[c] = int(quantities[i])
 
                 recipes[row[0]] = ing_dict
 
@@ -102,14 +102,28 @@ if __name__ == "__main__":
             # Display all recipes
             print(f"Displaying recipes...")
 
-            for recipe, ingredients in recipes.values():
+            for recipe, ingredients in recipes.items():
                 output = f"{recipe} = "
 
-                for ingredient, quantity in ingredients.values():
-                    output += f"{quantity} {ingredient}s + "
+                craftable = True
+                for ingredient, quantity in ingredients.items():
+                    output += f"{quantity} {ingredient} + " # TODO: Remove last +
 
-                # TODO: Check if this recipe is craftable
-                print(f"\t{G}{output}{W}")                        
+                    # Check if there are enough ingredients in the inventory
+                    if ingredient not in inventory.keys():
+                        craftable = False
+                    else:
+                        # We have the ingredient, just need to check the quantity
+                        num_owned = inventory.get(ingredient)
+                        if num_owned < quantity:
+                            craftable = False
+
+                # Output and use colors to show if it is craftable or not
+                if craftable:
+                    print(f"{G}", end="")
+                else:
+                    print(f"{R}", end="")
+                print(f"\t{output}{W}")                        
         
         elif t_input.lower() == "craft":
             # Craft a recipe and put into inventory
