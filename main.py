@@ -127,7 +127,44 @@ if __name__ == "__main__":
         
         elif t_input.lower() == "craft":
             # Craft a recipe and put into inventory
-            print(f"Craft a Recipe...")
+            # Get the recipe to craft
+            craft_rec = input(f"Which recipe to craft?\n")
+
+            try:
+                ingredients = recipes[craft_rec]
+
+                # Check that all ingredients/quantities are available
+                craftable = True
+                for ingredient, quantity in ingredients.items():
+                    if ingredient not in inventory.keys():
+                        craftable = False
+                    else:
+                        num_owned = inventory.get(ingredient)
+                        if num_owned < quantity:
+                            craftable = False
+
+                if craftable:
+                    # Remove all necessary ingredients from inventory
+                    for ingredient, quantity in ingredients.items():
+                        inventory[ingredient] = inventory.get(ingredient) - quantity
+                        if inventory.get(ingredient) == 0:
+                            # Remove the ingredient from the inventory
+                            del inventory[ingredient]
+
+                    # Add one of the crafted item to the inventory
+                    if craft_rec not in inventory.keys():
+                        inventory[craft_rec] = 1
+                    else:
+                        inventory[craft_rec] = inventory.get(craft_rec) + 1
+
+                    # Overwrite the inventory CSV file
+                    with open(inventory_file, 'w') as invfile:
+                        writer = invfile.writer()
+                else:
+                    print(f"{R}Could not craft: Missing ingredients{W}")
+                
+            except:
+                print(f"Invalid Recipe, try again")
 
         elif t_input.lower() == "stop":
             # Stop the loop and exit
