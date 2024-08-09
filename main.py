@@ -77,19 +77,48 @@ if __name__ == "__main__":
             # Gather ingredients
 
             environ = input("What is the current environment?\n")
-            num_ingredients = int(input("How many ingredients?\n"))
 
-            for i in range(num_ingredients):
+            # Get all legal ingredients for this environment
+            legal_ingredients = {}
+            with open(ingredients_file, 'r') as ingfile:
+                ingreader = csv.reader(ingfile, delimiter=',')
+                for row in ingreader:
+                    if row[0] != "Ingredient Name":
+                        possible_envs = row[1].split('|')
+                        rarities = row[2].split('|')
 
+                        if environ in possible_envs:
+                            legal_ingredients[row[0]] = float(rarities[possible_envs.index(environ)])
+
+            die_result = 0
+            if auto_roll:
                 # Roll a die
-                if auto_roll:
-                    # The program will roll a die
-                    die_result = np.random.uniform(1, 20)
-                    print(f"{Y}You have rolled a {die_result}{W}")
-                else:
-                    die_result = int(input(f"Roll a D20 for Ingredient {i}\n"))
+                die_result = np.random.uniform(1, 20)
+                print(f"{Y}You have rolled a {die_result}{W}")
+            else:
+                die_result = int(input(f"Roll a D20: "))
 
-                # TODO: Use numpy to generate a random roll and influence by the D20 score to shift the distribution
+            # Use die_result to gen a float between 0 and 1 
+            percents = []
+            for i in range(die_result):
+                percents.append(np.random.uniform(0, 1))
+
+            # Choose the ingredient with the rarity closest to the smallest
+            smallest_chance = min(percents)
+            rarest_ingredient = ""
+            smallest_diff = 100
+            for ingredient, rarity in legal_ingredients.items():
+                test_diff = abs(smallest_chance - rarity)
+                if test_diff < smallest_diff:
+                    rarest_ingredient = ingredient
+                    smallest_diff = test_diff
+
+            # Add that item to the inventory
+            if rarest_ingredient in inventory.keys():
+                inventory[rarest_ingredient] = inventory.get(rarest_ingredient) + 1
+            else:
+                inventory[rarest_ingredient] = 1
+
 
         elif t_input.lower() == "view":
             # Display the inventory
@@ -157,7 +186,7 @@ if __name__ == "__main__":
                     else:
                         inventory[craft_rec] = inventory.get(craft_rec) + 1
 
-                    # Overwrite the inventory CSV file
+                    # TODO: Overwrite the inventory CSV file with new information
                     with open(inventory_file, 'w') as invfile:
                         writer = invfile.writer()
                 else:
