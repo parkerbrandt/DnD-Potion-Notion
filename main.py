@@ -175,7 +175,14 @@ if __name__ == "__main__":
                         min_gen_chance = min(gen_chances)
                         rarest_ingredient = ""
                         smallest_diff = 1
-                        for ingredient, rarity in legal_ingredients.items():
+                        
+                        # Shuffle the ingredient dictionary
+                        shuffle_ing = {}
+                        shuffled_ingredients = list(legal_ingredients.items())
+                        random.shuffle(shuffled_ingredients)
+                        shuffled_ingredients = dict(shuffled_ingredients)
+
+                        for ingredient, rarity in shuffled_ingredients.items():
                             test_diff = abs(min_gen_chance - rarity)
                             if test_diff < smallest_diff:
                                 rarest_ingredient = ingredient
@@ -183,7 +190,7 @@ if __name__ == "__main__":
 
                         # Add the rarest ingredient to the inventory
                         amount = 1
-                        gather_str = f"You gathered {G}{amount} {rarest_ingredient}{W}!"
+                        gather_str = f"You gathered {G}{amount} {rarest_ingredient}{W} - {min_gen_chance}!"
                         print(gather_str)
 
                         if rarest_ingredient in inventory.keys():
