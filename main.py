@@ -277,9 +277,9 @@ if __name__ == "__main__":
                     else:
                         inventory[craft_rec] = inventory.get(craft_rec) + 1
 
-                    # TODO: Overwrite the inventory CSV file with new information
-                    with open(inventory_file, 'w') as invfile:
-                        writer = invfile.writer()
+                    # Update the inventory CSV file
+                    update_inventory_file(inventory)
+
                 else:
                     print(f"{R}Could not craft: Missing ingredients{W}")
                 
