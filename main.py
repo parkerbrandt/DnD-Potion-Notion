@@ -90,6 +90,9 @@ if __name__ == "__main__":
                         if environ in possible_envs:
                             legal_ingredients[row[0]] = float(rarities[possible_envs.index(environ)])
 
+                            # TODO: Print legal ingredients
+
+
             die_result = 0
             if auto_roll:
                 # Roll a die
@@ -124,8 +127,8 @@ if __name__ == "__main__":
             # Display the inventory
             print(f"Displaying current inventory...")
 
-            for ingredient, quantity in inventory.values():
-                print(f"\t{quantity} {ingredient}")         # TODO: Could add more info about when/where
+            for ingredient, quantity in inventory.items():
+                print(f"\t{quantity} {ingredient}")
         
         elif t_input.lower() == "view_r":
             # Display all recipes
