@@ -74,8 +74,7 @@ if __name__ == "__main__":
         t_input = input(f"Actions are:\n\tGather Ingredients (\'gather\'),\n\tView Inventory (\'view\'),\n\tView Recipes (\'view_r\'),\n\tCraft Recipe (\'craft\'),\n\tor Stop (\'stop\')\n\n")
         
         if t_input.lower() == "gather":
-            # Gather ingredients
-
+            # Gather ingredients in a specific environment
             environ = input("What is the current environment?\n")
 
             # Get all legal ingredients for this environment
@@ -90,37 +89,49 @@ if __name__ == "__main__":
                         if environ in possible_envs:
                             legal_ingredients[row[0]] = float(rarities[possible_envs.index(environ)])
 
-                            # TODO: Print legal ingredients
+                # Make sure there are > 0 ingredients (otherwise env is invalid)
+                if len(legal_ingredients) == 0:
+                    print("Invalid environment input...")
+                else:
+                    # Print legal ingredients for this environment
+                    print("Possible ingredients in " + environ + ":")
+                    for ingredient, rarity in legal_ingredients.items():
+                        print(f"\t{G}{ingredient}{W} ({Y}{rarity * 100}%{W} chance)")
 
+                    die_result = 0
+                    if auto_roll:
+                        # Roll a die
+                        die_result = np.random.uniform(1, 20)
+                        print(f"{Y}You have rolled a {die_result}{W}")
+                    else:
+                        die_result = int(input(f"Roll a D20: "))
 
-            die_result = 0
-            if auto_roll:
-                # Roll a die
-                die_result = np.random.uniform(1, 20)
-                print(f"{Y}You have rolled a {die_result}{W}")
-            else:
-                die_result = int(input(f"Roll a D20: "))
+                    # Generate n random floats in range [0, 1]
+                    # Take the lowest of all the numbers and find the closest rarity and use that ingredient
+                    gen_chances = []
+                    for i in range(die_result):
+                        gen_chances.append(np.random.uniform(0, 1))
 
-            # Use die_result to gen a float between 0 and 1 
-            percents = []
-            for i in range(die_result):
-                percents.append(np.random.uniform(0, 1))
+                    min_gen_chance = min(gen_chances)
+                    rarest_ingredient = ""
+                    smallest_diff = 1
+                    for ingredient, rarity in legal_ingredients.items():
+                        test_diff = abs(min_gen_chance - rarity)
+                        if test_diff < smallest_diff:
+                            rarest_ingredient = ingredient
+                            smallest_diff = test_diff
 
-            # Choose the ingredient with the rarity closest to the smallest
-            smallest_chance = min(percents)
-            rarest_ingredient = ""
-            smallest_diff = 100
-            for ingredient, rarity in legal_ingredients.items():
-                test_diff = abs(smallest_chance - rarity)
-                if test_diff < smallest_diff:
-                    rarest_ingredient = ingredient
-                    smallest_diff = test_diff
+                    # Add the rarest ingredient to the inventory
+                    print(f"You gathered {G}1 {rarest_ingredient}{W}!")
 
-            # Add that item to the inventory
-            if rarest_ingredient in inventory.keys():
-                inventory[rarest_ingredient] = inventory.get(rarest_ingredient) + 1
-            else:
-                inventory[rarest_ingredient] = 1
+                    if rarest_ingredient in inventory.keys():
+                        inventory[rarest_ingredient] = inventory.get(rarest_ingredient) + 1
+                    else:
+                        inventory[rarest_ingredient] = 1
+
+                    # TODO: Remove amount from env info
+
+                    # TODO: Rewrite the inventory and ingredients files
 
 
         elif t_input.lower() == "view":
