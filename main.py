@@ -36,18 +36,17 @@ def update_inventory_file(inventory_info={}, inv_file=inventory_file):
     if verbosity > 1:
         print(f"Updating inventory info at {Y}{inv_file}{W}")
 
-    header = "Ingredient Name,Quantity"
+    header = f"Ingredient Name,Quantity\n"
     
     # Rewrite the inventory file
-    with open(inv_file, "r") as ifile_in:
-        with open(inv_file, "w") as ifile_out:
+    with open(inv_file, "w") as ifile_out:
 
-            # Write the header information
-            ifile_out.write(header)
+        # Write the header information
+        ifile_out.write(header)
 
-            # Write all the inventory information
-            for item, quantity in inventory_info.items():
-                ifile_out.write(f"{item},{quantity}")
+        # Write all the inventory information
+        for item, quantity in inventory_info.items():
+            ifile_out.write(f"{item},{quantity}\n")
 
     return
 
@@ -66,11 +65,12 @@ def update_history_file(new_history, hist_file=history_file):
 
     # Rewrite the history file
     with open(hist_file, "r") as hfile_in:
-        with open(hist_file, "w") as hfile_out:
+        data = hfile_in.read()
+    
+    with open(hist_file, "w") as hfile_out:
 
             # Write all the previously existing information from the history file
-            for line in hfile_in:
-                hfile_out.write(line)
+            hfile_out.writelines(data)
 
             # Add the new addition
             hfile_out.write(append_str)
@@ -185,7 +185,7 @@ if __name__ == "__main__":
                     update_inventory_file(inventory)
 
                     # Add the gathering info to the history file
-                    update_history_file(gather_str)
+                    update_history_file(f"You gathered {amount} {rarest_ingredient} in the {environ}!")
 
 
         elif t_input.lower() == "view":
@@ -203,8 +203,12 @@ if __name__ == "__main__":
                 output = f"{recipe} = "
 
                 craftable = True
+
+                count = 0
                 for ingredient, quantity in ingredients.items():
-                    output += f"{quantity} {ingredient} + " # TODO: Remove last +
+                    output += f"{quantity} {ingredient}" # TODO: Remove last +
+                    if count < (len(ingredients) - 1):
+                        output += f" + "
 
                     # Check if there are enough ingredients in the inventory
                     if ingredient not in inventory.keys():
@@ -214,6 +218,8 @@ if __name__ == "__main__":
                         num_owned = inventory.get(ingredient)
                         if num_owned < quantity:
                             craftable = False
+
+                    count += 1
 
                 # Output and use colors to show if it is craftable or not
                 if craftable:
