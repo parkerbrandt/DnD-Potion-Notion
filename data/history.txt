@@ -1,12 +1,15 @@
-2024-12-04 14:52:37.025022
-You gathered 1 Rose in the Desert!
+2024-12-04 15:10:14.672072
+You gathered 1 Rose, 1 Rose, and 1 Rose!
 
-2024-12-04 14:52:43.809170
-You gathered 1 Rose in the Forest!
+2024-12-04 15:10:34.512907
+You gathered 1 Rose, and 1 Rose!
 
-2024-12-04 14:52:52.532069
-You gathered 1 Rose in the Forest!
+2024-12-04 15:10:45.176250
+You gathered 1 Rose!
 
-2024-12-04 14:53:07.491693
-You gathered 1 Apple in the Forest!
+2024-12-04 15:12:03.637984
+You gathered 1 Tea Leaves, and 1 Tea Leaves!
+
+2024-12-04 15:12:17.982319
+You gathered 1 Apple, 1 Apple, and 1 Rose!
 

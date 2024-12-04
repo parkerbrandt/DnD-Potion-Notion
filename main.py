@@ -10,6 +10,7 @@ import csv
 import datetime
 import numpy as np
 import os
+import random
 import sys
 
 
@@ -29,7 +30,6 @@ history_file = "data/history.txt"
 
 verbosity = 2
 auto_roll = False
-
 
 def update_inventory_file(inventory_info={}, inv_file=inventory_file):
 
@@ -155,37 +155,54 @@ if __name__ == "__main__":
                     else:
                         die_result = int(input(f"Roll a D20: "))
 
-                    # Generate n random floats in range [0, 1]
-                    # Take the lowest of all the numbers and find the closest rarity and use that ingredient
-                    # TODO: Could add bias that increases generated number but bias decreases each loop?
-                    gen_chances = []
-                    for i in range(die_result):
-                        gen_chances.append(np.random.uniform(0, 1))
+                    # Ask for how many ingredients to gather
+                    num_ingredients = int(input("How many ingredients to gather?\n"))
 
-                    min_gen_chance = min(gen_chances)
-                    rarest_ingredient = ""
-                    smallest_diff = 1
-                    for ingredient, rarity in legal_ingredients.items():
-                        test_diff = abs(min_gen_chance - rarity)
-                        if test_diff < smallest_diff:
-                            rarest_ingredient = ingredient
-                            smallest_diff = test_diff
+                    # Generate num_ingredients new ingredients
+                    new_ingredients = []
+                    for _ in range(num_ingredients):
 
-                    # Add the rarest ingredient to the inventory
-                    amount = 1
-                    gather_str = f"You gathered {G}{amount} {rarest_ingredient}{W}!"
-                    print(gather_str)
+                        # Generate n random floats in range [0, 1]
+                        # Take the lowest of all the numbers and find the closest rarity and use that ingredient
+                        # TODO: Could add bias that increases generated number but bias decreases each loop?
+                        gen_chances = []
+                        for i in range(die_result):
+                            gen_chances.append(np.random.uniform(0, 1))
 
-                    if rarest_ingredient in inventory.keys():
-                        inventory[rarest_ingredient] = inventory.get(rarest_ingredient) + 1
-                    else:
-                        inventory[rarest_ingredient] = 1
+                        min_gen_chance = min(gen_chances)
+                        rarest_ingredient = ""
+                        smallest_diff = 1
+                        for ingredient, rarity in legal_ingredients.items():
+                            test_diff = abs(min_gen_chance - rarity)
+                            if test_diff < smallest_diff:
+                                rarest_ingredient = ingredient
+                                smallest_diff = test_diff
 
-                    # Rewrite the inventory and ingredients files
+                        # Add the rarest ingredient to the inventory
+                        amount = 1
+                        gather_str = f"You gathered {G}{amount} {rarest_ingredient}{W}!"
+                        print(gather_str)
+
+                        if rarest_ingredient in inventory.keys():
+                            inventory[rarest_ingredient] = inventory.get(rarest_ingredient) + 1
+                        else:
+                            inventory[rarest_ingredient] = 1
+
+                        new_ingredients.append(rarest_ingredient)
+
+                    # Rewrite the inventory file
                     update_inventory_file(inventory)
 
                     # Add the gathering info to the history file
-                    update_history_file(f"You gathered {amount} {rarest_ingredient} in the {environ}!")
+                    new_history = f"You gathered "
+                    for i in range(len(new_ingredients)):
+                        if len(new_ingredients) == 1:
+                            new_history += f"1 {new_ingredients[i]}!"
+                        elif i < len(new_ingredients) - 1:
+                            new_history += f"1 {new_ingredients[i]}, "
+                        else:
+                            new_history += f"and 1 {new_ingredients[i]}!"
+                    update_history_file(new_history)
 
 
         elif t_input.lower() == "view":
