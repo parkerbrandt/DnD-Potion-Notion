@@ -164,12 +164,11 @@ if __name__ == "__main__":
 
                         # Generate n random floats in range [0, 1]
                         # Take the lowest of all the numbers and find the closest rarity and use that ingredient
-                        # TODO: Could add bias that increases generated number but bias decreases each loop?
                         gen_chances = []
                         bias = 0.5
                         for i in range(die_result):
-                            gen_chances.append(np.random.uniform(0, 1) + bias)
-                            bias = bias - 0.05
+                            gen_chances.append(np.random.normal(loc=0.8, scale=0.2) + bias)
+                            bias = bias - 0.025
                             if bias < 0:
                                 bias = 0
 
