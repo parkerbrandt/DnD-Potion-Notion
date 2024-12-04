@@ -7,6 +7,7 @@ Brennen Dahl, Parker Brandt
 """
 
 import csv
+import datetime
 import numpy as np
 import os
 import sys
@@ -24,9 +25,57 @@ G = '\033[32m'  # green
 ingredients_file = "data/ingredients.csv"
 inventory_file = "data/inventory.csv"
 recipes_file = "data/recipes.csv"
+history_file = "data/history.txt"
 
 verbosity = 2
 auto_roll = False
+
+
+def update_inventory_file(inventory_info={}, inv_file=inventory_file):
+
+    if verbosity > 1:
+        print(f"Updating inventory info at {Y}{inv_file}{W}")
+
+    header = "Ingredient Name,Quantity"
+    
+    # Rewrite the inventory file
+    with open(inv_file, "r") as ifile_in:
+        with open(inv_file, "w") as ifile_out:
+
+            # Write the header information
+            ifile_out.write(header)
+
+            # Write all the inventory information
+            for item, quantity in inventory_info.items():
+                ifile_out.write(f"{item},{quantity}")
+
+    return
+
+# TODO
+def update_ingredient_file(ingredient_info, ing_file=ingredients_file):
+    return
+
+def update_history_file(new_history, hist_file=history_file):
+
+    if verbosity > 1:
+        print(f"Updating history file at {Y}{history_file}{W}")
+
+    # Get the current date and time and generate the complete history string
+    current_time = datetime.datetime.now()
+    append_str = f"{current_time}\n{new_history}\n\n"
+
+    # Rewrite the history file
+    with open(hist_file, "r") as hfile_in:
+        with open(hist_file, "w") as hfile_out:
+
+            # Write all the previously existing information from the history file
+            for line in hfile_in:
+                hfile_out.write(line)
+
+            # Add the new addition
+            hfile_out.write(append_str)
+
+    return
 
 
 """
@@ -108,6 +157,7 @@ if __name__ == "__main__":
 
                     # Generate n random floats in range [0, 1]
                     # Take the lowest of all the numbers and find the closest rarity and use that ingredient
+                    # TODO: Could add bias that increases generated number but bias decreases each loop?
                     gen_chances = []
                     for i in range(die_result):
                         gen_chances.append(np.random.uniform(0, 1))
@@ -122,16 +172,20 @@ if __name__ == "__main__":
                             smallest_diff = test_diff
 
                     # Add the rarest ingredient to the inventory
-                    print(f"You gathered {G}1 {rarest_ingredient}{W}!")
+                    amount = 1
+                    gather_str = f"You gathered {G}{amount} {rarest_ingredient}{W}!"
+                    print(gather_str)
 
                     if rarest_ingredient in inventory.keys():
                         inventory[rarest_ingredient] = inventory.get(rarest_ingredient) + 1
                     else:
                         inventory[rarest_ingredient] = 1
 
-                    # TODO: Remove amount from env info
+                    # Rewrite the inventory and ingredients files
+                    update_inventory_file(inventory)
 
-                    # TODO: Rewrite the inventory and ingredients files
+                    # Add the gathering info to the history file
+                    update_history_file(gather_str)
 
 
         elif t_input.lower() == "view":
