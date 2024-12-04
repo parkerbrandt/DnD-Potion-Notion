@@ -166,8 +166,12 @@ if __name__ == "__main__":
                         # Take the lowest of all the numbers and find the closest rarity and use that ingredient
                         # TODO: Could add bias that increases generated number but bias decreases each loop?
                         gen_chances = []
+                        bias = 0.5
                         for i in range(die_result):
-                            gen_chances.append(np.random.uniform(0, 1))
+                            gen_chances.append(np.random.uniform(0, 1) + bias)
+                            bias = bias - 0.05
+                            if bias < 0:
+                                bias = 0
 
                         min_gen_chance = min(gen_chances)
                         rarest_ingredient = ""
@@ -223,7 +227,7 @@ if __name__ == "__main__":
 
                 count = 0
                 for ingredient, quantity in ingredients.items():
-                    output += f"{quantity} {ingredient}" # TODO: Remove last +
+                    output += f"{quantity} {ingredient}"
                     if count < (len(ingredients) - 1):
                         output += f" + "
 
