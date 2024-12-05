@@ -165,7 +165,7 @@ if __name__ == "__main__":
                         # Generate n random floats in range [0, 1]
                         # Take the lowest of all the numbers and find the closest rarity and use that ingredient
                         gen_chances = []
-                        bias = 0.5
+                        bias = 0
                         for i in range(die_result):
                             gen_chances.append(np.random.normal(loc=0.8, scale=0.2) + bias)
                             bias = bias - 0.025
@@ -289,6 +289,9 @@ if __name__ == "__main__":
 
                     # Update the inventory CSV file
                     update_inventory_file(inventory)
+
+                    # Add the crafted item to the history file
+                    update_history_file(f"You crafted 1 {craft_rec}!")
 
                 else:
                     print(f"{R}Could not craft: Missing ingredients{W}")
