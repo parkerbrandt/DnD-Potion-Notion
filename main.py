@@ -135,7 +135,7 @@ if __name__ == "__main__":
                         possible_envs = row[1].split('|')
                         rarities = row[2].split('|')
 
-                        if environ in possible_envs and rarities[possible_envs.index(environ)] != 99:
+                        if environ in possible_envs and float(rarities[possible_envs.index(environ)]) != 99:
                             legal_ingredients[row[0]] = float(rarities[possible_envs.index(environ)])
 
                 # Make sure there are > 0 ingredients (otherwise env is invalid)
